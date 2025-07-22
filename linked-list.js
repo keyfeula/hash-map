@@ -18,6 +18,9 @@ export function createLinkedList() {
             }
             size++;
         },
+        remove(key) {
+            
+        },
         getSize() {
             return size;
         },
