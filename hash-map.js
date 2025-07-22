@@ -1,5 +1,7 @@
+import { createLinkedList } from "./linked-list.js";
+
 function createHashMap(loadFactor = 0.8, capacity = 16) {
-    const array = new Array(capacity).fill(new Array());
+    const array = new Array(capacity).fill(null);
 
     function hash(key) {
         let hashCode = 0;
@@ -13,14 +15,43 @@ function createHashMap(loadFactor = 0.8, capacity = 16) {
 
     return {
         set(key, value) {
-            array[hash(key)] = { key, value };
+            let index = hash(key);
+            if (array[index] === null) {
+                array[index] = createLinkedList();
+                array[index].appendNode(key, value);
+            }
+            else {
+                let valueChanged = false;
+                let bucketSize = array[index].getSize();
+                let node = array[index].getListHead();
+                for (let i = 0; i < bucketSize; i++) {
+                    if (node.getKey() === key) {
+                        node.setValue(value);
+                        valueChanged = true;
+                    }
+                    node = node.getNext();
+                }
+                if (!valueChanged) {
+                    array[index].appendNode(key, value);
+                }
+            }
         },
-        get(key) {
-            return array[hash(key)].value;
+        printBuckets() {
+            for (let i = 0; i < array.length; i++) {
+                if (array[i] !== null) {
+                    array[i].printList();
+                }
+                else {
+                    console.log(array[i]);
+                }
+            }
         }
     }
 }
 
 let map = createHashMap();
-map.set("key", "hello");
-console.log(map.get("key"));
+map.set("han", "blaster");
+map.set("obi", "lightsaber");
+map.set("luke", "lightsaber");
+map.set("han", "none");
+map.printBuckets();
