@@ -1,8 +1,10 @@
-import { createLinkedList } from "./linked-list.js";
-
 function createHashMap(loadFactor = 0.8, capacity = 16) {
-    const array = new Array(capacity).fill(null);
+
     let size = 0;
+    const array = new Array(capacity);
+    for (let i = 0; i < array.length; i++) {
+        array[i] = new Array(0);
+    }
 
     function hash(key) {
         let hashCode = 0;
@@ -16,78 +18,41 @@ function createHashMap(loadFactor = 0.8, capacity = 16) {
 
     return {
         set(key, value) {
-            let index = hash(key);
-            if (array[index] === null) {
-                array[index] = createLinkedList();
-                array[index].appendNode(key, value);
-                size++;
-            }
-            else {
-                let valueChanged = false;
-                let bucketSize = array[index].getSize();
-                let node = array[index].getListHead();
-                for (let i = 0; i < bucketSize; i++) {
-                    if (node.getKey() === key) {
-                        node.setValue(value);
-                        valueChanged = true;
-                    }
-                    node = node.getNext();
-                }
-                if (!valueChanged) {
-                    array[index].appendNode(key, value);
-                    size++;
+            let bucket = array[hash(key)];
+            for (let i = 0; i < bucket.length; i++) {
+                if (bucket[i].key === key) {
+                    bucket[i].value = value;
+                    return;
                 }
             }
+            bucket.push({ key, value });
+            size++;
+            console.log(array);
+            return;
         },
         get(key) {
-            let index = hash(key);
-            if (array[index] === null) {
-                return null;
-            }
-            else {
-                let node = array[index].getListHead();
-                for (let i = 0; i < array[index].getSize(); i++) {
-                    if (node.getKey() === key) {
-                        return node.getValue();
-                    }
+            let bucket = array[hash(key)];
+            for (let i = 0; i < bucket.length; i++) {
+                if (key === bucket[i].key) {
+                    return bucket[i].value; 
                 }
-                return null;
             }
+            return null;
         },
         remove(key) {
-            if (this.get(key) === null) {
-                return false;
-            }
-            else {
-                let index = hash(key);
-                let node = array[index].getListHead();
-                for (let i = 0; i < array[index].getSize() - 1; i++) {
-                    if (node.getNext().getKey() === key) {
-                        node.setNext(node.getNext().getNext());
-                        size--;
-                        return true;
-                    }
-                    node = node.getNext();
-                }
-            }
+            
         },
         printBuckets() {
-            for (let i = 0; i < array.length; i++) {
-                if (array[i] !== null) {
-                    array[i].printList();
-                }
-                else {
-                    console.log(array[i]);
-                }
-            }
+            
         }
     }
+
 }
 
 let map = createHashMap();
-map.set("han", "blaster");
-map.set("obi", "lightsaber");
-map.set("luke", "lightsaber");
-map.set("han", "none");
-console.log(map.remove("han"));
-map.printBuckets();
+map.set("key", "123");
+map.set("red", "h2d");
+map.set("oak", "339");
+map.set("key", "f9d");
+map.set("brock", "eart4");
+console.log(map.get("red"));
