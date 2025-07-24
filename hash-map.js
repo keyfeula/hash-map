@@ -1,4 +1,4 @@
-function createHashMap(loadFactor = 0.8, capacity = 16) {
+function createHashMap(loadFactor = 0.75, capacity = 16) {
 
     let size = 0;
     const array = new Array(capacity);
@@ -16,14 +16,34 @@ function createHashMap(loadFactor = 0.8, capacity = 16) {
             return hashCode;
     }
 
+    function growArray() {
+         {  
+                for (let i = 0; i < array.length; i++) {
+                    let bucket = array[i];
+                    for (let j = 0; j < bucket.length; j++) {
+                        remove(bucket[j].key);
+                    }
+                }
+
+                for (let i = size; i < capacity - 1; i++) {
+                    array[i] = new Array(0);
+                }
+            }
+    }
+
     return {
         set(key, value) {
+            console.log("key: " + key + " hash: " + hash(key));
             let bucket = array[hash(key)];
             for (let i = 0; i < bucket.length; i++) {
                 if (bucket[i].key === key) {
                     bucket[i].value = value;
                     return;
                 }
+            }
+            
+            if (size / capacity >= loadFactor) {
+                growArray();
             }
             bucket.push({ key, value });
             size++;
@@ -56,13 +76,33 @@ function createHashMap(loadFactor = 0.8, capacity = 16) {
         getLength() {
             return size;
         },
+        getKeys() {
+            let keys = [];
+            for (let i = 0; i < array.length; i++) {
+                let bucket = array[i];
+                for (let j = 0; j < bucket.length; j++) {
+                    keys.push(bucket[j].key);
+                }
+            }
+            return keys;
+        },
+        getValues() {
+            let values = [];
+            for (let i = 0; i < array.length; i++) {
+                let bucket = array[i];
+                for (let j = 0; j < bucket.length; j++) {
+                    values.push(bucket[j].value);
+                }
+            }
+            return values;
+        },
         clear() {
             for (let i = 0; i < array.length; i++) {
                 array[i] = new Array(0);
             }
             size = 0;
         },
-        printBuckets() {
+        printEntries() {
             console.log(array);
         }
     }
@@ -76,8 +116,25 @@ map.set("oak", "339");
 map.set("key", "f9d");
 map.set("misty", "water");
 map.set("brock", "eart4");
-map.remove("oak");
-map.remove("pk");
-map.clear();
+map.set("gary", "normal");
+map.set("cyrus", "poison");
+map.set("gary", "normal");
+map.set("person1", "normal");
+map.set("person2", "normal");
+map.set("person3", "normal");
+map.set("person4", "normal");
+map.set("person5", "psychic");
+map.set("person6", "water");
+map.set("person7", "water");
+map.set("person8", "water");
+map.set("person9", "water");
+map.set("person10", "water");
+//map.set("key", "fire");
+//map.set("gary", "flying");
+//map.remove("oak");
+map.set("brock", "rock");
+//map.clear();
 console.log("size: " + map.getLength());
-map.printBuckets();
+console.log("keys: " + map.getKeys());
+console.log("values: " + map.getValues());
+map.printEntries();
