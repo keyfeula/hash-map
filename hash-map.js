@@ -27,7 +27,6 @@ function createHashMap(loadFactor = 0.8, capacity = 16) {
             }
             bucket.push({ key, value });
             size++;
-            console.log(array);
             return;
         },
         get(key) {
@@ -40,10 +39,31 @@ function createHashMap(loadFactor = 0.8, capacity = 16) {
             return null;
         },
         remove(key) {
-            
+            if (this.get(key) === null) {
+                return false;
+            }
+            else {
+                let bucket = array[hash(key)];
+                for (let i = 0; i < bucket.length; i++) {
+                    if (bucket[i].key === key) {
+                        bucket.splice(i, 1);
+                        size--;
+                        return true;
+                    }
+                }
+            }
+        },
+        getLength() {
+            return size;
+        },
+        clear() {
+            for (let i = 0; i < array.length; i++) {
+                array[i] = new Array(0);
+            }
+            size = 0;
         },
         printBuckets() {
-            
+            console.log(array);
         }
     }
 
@@ -54,5 +74,10 @@ map.set("key", "123");
 map.set("red", "h2d");
 map.set("oak", "339");
 map.set("key", "f9d");
+map.set("misty", "water");
 map.set("brock", "eart4");
-console.log(map.get("red"));
+map.remove("oak");
+map.remove("pk");
+map.clear();
+console.log("size: " + map.getLength());
+map.printBuckets();
